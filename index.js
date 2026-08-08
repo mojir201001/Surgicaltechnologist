@@ -13,14 +13,15 @@ const textHandler = require("./handlers/textHandler");
 const HttpsProxyAgent = require("https-proxy-agent");
 const proxyConfig = require("./config/proxy");
 
-
 let agent = null;
 
+const proxyEnabled =
+    process.env.PROXY_ENABLED !== undefined
+        ? process.env.PROXY_ENABLED === "true"
+        : proxyConfig.enabled;
 
-if(proxyConfig.enabled){
-
+if (proxyEnabled) {
     agent = new HttpsProxyAgent(proxyConfig.proxy);
-
 }
 
 
