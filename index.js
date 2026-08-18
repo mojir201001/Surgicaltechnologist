@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { Telegraf } = require("telegraf");
 
 
@@ -59,14 +60,44 @@ textHandler(bot);
 
 
 
-bot.launch()
-.then(()=>{
+
+bot.use(async (ctx, next) => {
+    console.log("📥 UPDATE:", ctx.updateType);
+    console.log("📦 DATA:", ctx.update);
+    await next();
+});
+
+
+
+
+
+console.log("🚀 قبل از bot.launch");
+
+console.log("🚀 قبل از bot.launch");
+console.log("🔎 TEST TELEGRAM API");
+
+bot.telegram.getMe()
+    .then((me) => {
+        console.log("✅ Telegram API OK:", me.username);
+    })
+    .catch((err) => {
+        console.log("❌ Telegram API ERROR:", err.message);
+    });
+bot.launch({
+    dropPendingUpdates: true
+})
+.then(() => {
     console.log("✅ اتصال به تلگرام برقرار شد.");
 })
-.catch((err)=>{
+.catch((err) => {
     console.log("❌ خطای اجرای ربات:");
     console.log(err);
 });
 
+console.log("🚀 بعد از bot.launch");
+
+setInterval(() => {
+    console.log("💓 ربات هنوز در حال اجراست...");
+}, 10000);
 
 console.log("ربات با موفقیت اجرا شد.");
