@@ -1,3 +1,8 @@
 name = "telegram-cloudflare-worker"
 main = "worker.js"
 compatibility_date = "2026-08-09"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "surgicaltechnologist-db"
+database_id = "4fa31adb-a32e-4126-a9ec-9b8e11f1daf2"
