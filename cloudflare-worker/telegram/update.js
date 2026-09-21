@@ -1,6 +1,8 @@
 import { telegram } from "./send.js";
 import { showUserButtons } from "../user/buttons.js";
 import { handleUserButton } from "../user/handlers.js";
+import { showAdminPanel } from "../admin/panel.js";
+import { showAdminButtons } from "../admin/buttons.js";
 
 const welcomeText =
 `🌟 به ربات اختصاصی دانشجویان اتاق عمل کد 1️⃣ خوش آمدید.
@@ -59,7 +61,77 @@ export async function handleUpdate(env, update) {
       text: welcomeText
     });
 
-    await showUserButtons(env, chatId, 0);
+    await showUserButtons(
+      env,
+      chatId,
+      0
+    );
+
+    return;
+  }
+
+  // =========================
+  // پنل مدیریت
+  // =========================
+
+  if (
+    update.callback_query?.data === "admin_panel" &&
+    String(userId) === String(env.ADMIN_ID)
+  ) {
+    await telegram(env, "answerCallbackQuery", {
+      callback_query_id:
+        update.callback_query.id
+    });
+
+    await showAdminPanel(
+      env,
+      chatId,
+      update.callback_query.message.message_id
+    );
+
+    return;
+  }
+
+  // =========================
+  // مدیریت دکمه‌ها
+  // =========================
+
+  if (
+    update.callback_query?.data === "buttons" &&
+    String(userId) === String(env.ADMIN_ID)
+  ) {
+    await telegram(env, "answerCallbackQuery", {
+      callback_query_id:
+        update.callback_query.id
+    });
+
+    await showAdminButtons(
+      env,
+      chatId,
+      update.callback_query.message.message_id
+    );
+
+    return;
+  }
+
+  // =========================
+  // نمای کاربر
+  // =========================
+
+  if (
+    update.callback_query?.data === "user_view"
+  ) {
+    await telegram(env, "answerCallbackQuery", {
+      callback_query_id:
+        update.callback_query.id
+    });
+
+    await showUserButtons(
+      env,
+      chatId,
+      0,
+      update.callback_query.message.message_id
+    );
 
     return;
   }
@@ -87,7 +159,7 @@ export async function handleUpdate(env, update) {
   }
 
   // =========================
-  // بازگشت
+  // بازگشت کاربر
   // =========================
 
   if (
@@ -123,7 +195,35 @@ export async function handleUpdate(env, update) {
 
     return;
   }
+  // =========================
+  // تنظیمات دکمه مدیر
+  // =========================
 
+  if (
+    update.callback_query?.data?.startsWith("button_") &&
+    String(userId) === String(env.ADMIN_ID)
+  ) {
+    const { showButtonSettings } =
+      await import("../admin/buttonSettings.js");
+
+    const buttonId = Number(
+      update.callback_query.data.replace("button_", "")
+    );
+
+    await telegram(env, "answerCallbackQuery", {
+      callback_query_id:
+        update.callback_query.id
+    });
+
+    await showButtonSettings(
+      env,
+      chatId,
+      buttonId,
+      update.callback_query.message.message_id
+    );
+
+    return;
+  }
   // =========================
   // دکمه‌های کاربر
   // =========================
